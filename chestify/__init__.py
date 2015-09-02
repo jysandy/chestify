@@ -24,5 +24,9 @@ def main(global_config, **settings):
     #Routes
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('list', '/{user_id}/list')
+    config.add_route('download-url', '/{user_id}/download-url')
+    config.add_route('upload-url', '/{user_id}/upload-url')
+    config.add_route('generate-shared', '/{user_id}/generate-shared')
     config.scan()
     return config.make_wsgi_app()

@@ -1,0 +1,4 @@
+env/
+chestify.egg-info/
+chestify/__pycache__/
+*.pyc

@@ -13,6 +13,9 @@ requires = [
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'waitress',
+    'sqlalchemy',
+    'pyramid_tm',
+    'zope.sqlalchemy'
     ]
 
 setup(name='chestify',

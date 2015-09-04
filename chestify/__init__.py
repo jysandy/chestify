@@ -6,6 +6,7 @@ from pyramid.config import Configurator
 import sqlalchemy
 
 from .security import principal_callback
+from .models import DBSession, Base
 
 #TODO: Make this properly secure
 DEVEL_SECRET_KEY = 'huehuehuehuehue'
@@ -23,7 +24,7 @@ def main(global_config, **settings):
     port = os.environ.get('OPENSHIFT_POSTGRESQL_PORT')
     database = 'chestify'
     connect_url = sqlalchemy.engine.url.URL(username=username, password=password,
-                    host=host, port=port, database=database, drivername='psycopg2')
+                    host=host, port=port, database=database, drivername='postgresql')
     if host is not None:
         #If we are on Openshift
         engine = sqlalchemy.create_engine(connect_url)

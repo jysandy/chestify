@@ -32,7 +32,7 @@ def main(global_config, **settings):
         Base.metadata.bind = engine
         Base.metadata.create_all()
 
-    secret_key = os.environ.get('CHESTIFY_SECRET_KEY', settings['chestify.secret'])
+    secret_key = os.environ.get('CHESTIFY_SECRET_KEY', settings.get('chestify.secret'))
 	# Security policies
     authn_policy = AuthTktAuthenticationPolicy(
         secret_key, callback=principal_callback,

@@ -8,8 +8,6 @@ import sqlalchemy
 from .security import principal_callback
 from .models import DBSession, Base
 
-#TODO: Make this properly secure
-DEVEL_SECRET_KEY = 'huehuehuehuehue'
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -33,7 +31,7 @@ def main(global_config, **settings):
         Base.metadata.create_all()
 
     secret_key = os.environ.get('CHESTIFY_SECRET_KEY', settings.get('chestify.secret'))
-	# Security policies
+    # Security policies
     authn_policy = AuthTktAuthenticationPolicy(
         secret_key, callback=principal_callback,
         hashalg='sha512')

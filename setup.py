@@ -36,7 +36,7 @@ setup(name='chestify',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires,
+      tests_require=requires+['nose'],
       test_suite="chestify",
       entry_points="""\
       [paste.app_factory]

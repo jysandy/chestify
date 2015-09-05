@@ -15,7 +15,8 @@ requires = [
     'waitress',
     'sqlalchemy',
     'pyramid_tm',
-    'zope.sqlalchemy'
+    'zope.sqlalchemy',
+    'psycopg2'
     ]
 
 setup(name='chestify',

@@ -1,7 +1,7 @@
 from sqlalchemy import (
     Column,
     Integer,
-    Text,
+    String,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,5 +20,16 @@ DBSession = scoped_session(
 Base = declarative_base()
 
 
-#class User(Base):
-	#TODO: Fill out the fields here
+class User(Base):
+    __tablename__ = 'user'
+    
+    id = Column(String, primary_key=True)
+    email = Column(String)
+    data_used = Column(Integer)
+
+
+class Link(Base):
+    __tablename__ = 'link'
+    
+    id = Column(Integer, primary_key=True)
+    key = Column(String)

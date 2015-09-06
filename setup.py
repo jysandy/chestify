@@ -16,7 +16,8 @@ requires = [
     'sqlalchemy',
     'pyramid_tm',
     'zope.sqlalchemy',
-    'psycopg2'
+    'psycopg2',
+    'boto3'
     ]
 
 setup(name='chestify',

@@ -1,9 +1,16 @@
 class FileTree:
+    """ Represents the user's filesystem as a nested dict structure.
+    """
+    
     def __init__(self):
         self.fs = { 'folders' : dict(), 'files' : dict() }
         
         
-    def add_path(self, path):
+    def add_path(self, path, meta={}):
+        """ Adds a complete file path to the filesystem.
+            Empty directories are represented as '.dir' files.
+            Ex: /home/sandy/.dir represents the empty directory /home/sandy.
+        """
         parts = path.split('/')
         path_list = parts[:-1]
         file = parts[-1]
@@ -19,4 +26,4 @@ class FileTree:
             path_list = path_list[1:]
         if file != '.dir':
             #Finally add the file
-            pwd['files'][file] = dict()
+            pwd['files'][file] = meta

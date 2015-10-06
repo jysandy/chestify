@@ -62,6 +62,22 @@ def upload_url(request):
 	pass
 
 
+@view_config(route_name='create-dir', renderer='json', request_method='POST', permission='edit')
+def create_directory(request):
+    """ Creates an empty directory.
+    """
+    # Assuming request.params['path'] is of the form
+    # /foo/goo/bar/
+    key = request.matchdict['user_id'] + '/' + request.params['path'] + '.dir'
+    s3 = boto3.resource('s3')
+    new_dir = s3.Object(bucket_name='chestify', key=key)
+    response = new_dir.put(Body=b'')
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return {'result':'success'}
+    else:
+        return {'result':'failure'}
+    
+
 @view_config(route_name='generate-shared', renderer='json', request_method='POST', permission='edit')
 def generate_shared(request):
     """ Generates a shareable link for the given file.

@@ -52,6 +52,7 @@ def main(global_config, **settings):
     config.add_route('list', '/{user_id}/list')
     config.add_route('download-url', '/{user_id}/download-url')
     config.add_route('upload-url', '/{user_id}/upload-url')
+    config.add_route('create-dir', '/{user_id}/makedir')
     config.add_route('generate-shared', '/{user_id}/generate-shared')
     config.add_route('shared-download', '/shared')
     config.scan()

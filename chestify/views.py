@@ -5,7 +5,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from .filetree import FileTree
 from .models import DBSession, User, Link
 
-#TODO: Add view/route for directory creation
 
 
 @view_config(route_name='home', renderer='templates/index.pt')
@@ -57,9 +56,13 @@ def download_url(request):
 
 @view_config(route_name='upload-url', renderer='json', request_method='GET', request_param='path', permission='edit')
 def upload_url(request):
-	""" Generates a presigned upload URL for the given path.
-	"""
-	pass
+    """ Generates a presigned upload URL for the given path.
+    """
+    client = boto3.client('s3')
+    url = client.generate_presigned_url('put_object',
+                                        Params={'Bucket':'chestify', 'Key':request.params['path']},
+                                        ExpiresIn=30)
+    return {'url':url}
 
 
 @view_config(route_name='create-dir', renderer='json', request_method='POST', permission='edit')

@@ -21,7 +21,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
     
-    uid = Column(String, primary_key=True)
+    uid = Column(String, primary_key=True) #google user id 
     email = Column(String)
     data_used = Column(Integer)
 

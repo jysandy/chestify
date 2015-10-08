@@ -55,5 +55,7 @@ def main(global_config, **settings):
     config.add_route('create-dir', '/{user_id}/makedir')
     config.add_route('generate-shared', '/{user_id}/generate-shared')
     config.add_route('shared-download', '/shared')
+    config.add_route('login','/login')
+    config.add_route('logout','/{user_id}/logout')
     config.scan()
     return config.make_wsgi_app()

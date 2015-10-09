@@ -7,12 +7,16 @@ from .models import DBSession, User, Link
 
 
 
-@view_config(route_name='home', renderer='templates/index.pt')
+@view_config(route_name='home',
+             renderer='templates/index.pt')
 def my_view(request):
     return {'project': 'chestify'}
 
 
-@view_config(route_name='list', renderer='json', request_method='GET', permission='edit')
+@view_config(route_name='list',
+             renderer='json',
+             request_method='GET',
+             permission='edit')
 def list_files(request):
     """ Lists the directory tree of the user in JSON format.
     """
@@ -43,7 +47,11 @@ def list_files(request):
     return ft.fs
 
 
-@view_config(route_name='download-url', renderer='json', request_method='GET', request_param='key', permission='edit')
+@view_config(route_name='download-url',
+             renderer='json',
+             request_method='GET',
+             request_param='key',
+             permission='edit')
 def download_url(request):
     """ Generates a presigned download URL for the given file.
     """
@@ -54,7 +62,11 @@ def download_url(request):
     return {'url':url}
 
 
-@view_config(route_name='upload-url', renderer='json', request_method='GET', request_param='path', permission='edit')
+@view_config(route_name='upload-url',
+             renderer='json',
+             request_method='GET',
+             request_param='path',
+             permission='edit')
 def upload_url(request):
     """ Generates a presigned upload URL for the given path.
     """
@@ -65,7 +77,10 @@ def upload_url(request):
     return {'url':url}
 
 
-@view_config(route_name='create-dir', renderer='json', request_method='POST', permission='edit')
+@view_config(route_name='create-dir',
+             renderer='json',
+             request_method='POST',
+             permission='edit')
 def create_directory(request):
     """ Creates an empty directory.
     """
@@ -81,7 +96,10 @@ def create_directory(request):
         return {'result':'failure'}
     
 
-@view_config(route_name='generate-shared', renderer='json', request_method='POST', permission='edit')
+@view_config(route_name='generate-shared',
+             renderer='json',
+             request_method='POST',
+             permission='edit')
 def generate_shared(request):
     """ Generates a shareable link for the given file.
         Expects a form parameter called 'path'. This should be
@@ -102,7 +120,8 @@ def generate_shared(request):
     return {'result':'success'}
 
 
-@view_config(route_name='shared-download', request_method='GET')
+@view_config(route_name='shared-download',
+             request_method='GET')
 def shared_download(request):
     """ Downloads a shared file.
     """
@@ -115,3 +134,26 @@ def shared_download(request):
                                         Params={'Bucket':'chestify', 'Key':link.key},
                                         ExpiresIn=30)
     return HTTPFound(location=url)
+
+
+@view_config(
+    route_name='login',
+    request_method='GET',
+    renderer = 'json' )
+def login(request):
+    """ Logins in the goddamn user
+    """
+    #TODO write code
+    return {'login':'still undergoing '} 
+
+
+@view_config(
+    route_name='logout',
+    request_method= 'GET',
+    renderer = 'json',
+    permission='edit' )
+def logout(request):
+    """ Logout user throw him out 
+    """
+    #TODO wirte code
+    return {'logout','still_undegoing'} 

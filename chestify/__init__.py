@@ -2,6 +2,7 @@ import os
 
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.session import SignedCookieSessionFactory
 from pyramid.config import Configurator
 import sqlalchemy
 
@@ -12,7 +13,9 @@ from .models import DBSession, Base
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    config = Configurator(settings=settings, root_factory='.resources.Root')
+    config = Configurator(
+        settings=settings, 
+        root_factory='.resources.Root')
     config.include('pyramid_chameleon')
 
     #Database connection
@@ -56,6 +59,7 @@ def main(global_config, **settings):
     config.add_route('generate-shared', '/{user_id}/generate-shared')
     config.add_route('shared-download', '/shared')
     config.add_route('login','/login')
-    config.add_route('logout','/{user_id}/logout')
+    config.add_route('logout','/logout')
+    config.add_route('auth_test','/auth')
     config.scan()
     return config.make_wsgi_app()

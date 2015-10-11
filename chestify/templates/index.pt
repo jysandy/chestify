@@ -23,6 +23,9 @@
         <link rel="import" href="${request.static_url('chestify:static/bower_components/paper-material/paper-material.html')}">
         <link rel="import" href="${request.static_url('chestify:static/bower_components/google-signin/google-signin.html')}">
         <link rel="import" href="${request.static_url('chestify:static/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html')}">
+        <link rel="import" href= "${request.static_url('chestify:static/request-maker.html')}">
+        <link rel="import" href= "${request.static_url('chestify:static/signin-element.html')}">
+
         	<script src="https://apis.google.com/js/platform.js" async defer></script>
         					<meta name="google-signin-client_id" content="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com">
 		</head>
@@ -69,10 +72,9 @@
 						scopes="https://www.googleapis.com/auth/plus.me"
 						id="gLogin" 
 						></google-signin>
-						<!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
-						<!-- <a href="#" onclick="signOut();">Sign out</a> -->
-					</div>
 				</paper-card>
+
+
 			</paper-scroll-header-panel>
 		
 
@@ -87,30 +89,41 @@
 			}
 			var bhasElement = document.querySelector('#gLogin');
 			bhasElement.addEventListener('google-signin-success',function(googleUser){
+				
+				
 				var profile = getProfile();
 				var profile_id  = profile.getId();
 				var username = profile.getName();
 				var imageUrl = profile.getImageUrl();
 				var email = profile.getEmail();
-				alert(" Name "+username);
+				//alert(" profile id  "+profile_id);
 				userSignedIn = true;
+				
+				var id_token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+				alert(id_token);
+
+				//send the code to the server 
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST','http://localhost:8080/login');
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onload = function(){
+					alert('the response is ' + xhr.responseText);
+				}
+				xhr.send('id_token='+id_token );
+				alert(bhasElement.signedIn);
 			});
 			bhasElement.addEventListener('google-signed-out',function(){
-				if(userSignedIn){
-					alert("The User left ");
+				if(!bhasElement.signedIn && userSignedIn){
+					alert('we are trying to logout ');
+					var signedoutRequest = new XMLHttpRequest();
+					signedoutRequest.open('GET','http://localhost:8080/logout');
+					signedoutRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					signedoutRequest.onload = function(){
+						alert('the user has signed out ' + signedoutRequest.responseText);
+					}
+					signedoutRequest.send();
 				}
 			});
-			function onSignIn(googleUser) {
-  				var profile = googleUser.getBasicProfile();
-				var profile_id  = profile.getId();
-				var username = profile.getName();
-				var imageUrl = profile.getImageUrl();
-				var email = profile.getEmail();
-				alert(" Name "+username);
-			}
-			function onSignOut(googleUser){
-				alert("User signed out ");
-			}
 			HTMLimport.whenReady()
 		</script>
 	</body>

@@ -4,6 +4,8 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from sqlalchemy.orm.exc import NoResultFound
 from .filetree import FileTree
 from .models import DBSession, User, Link
+from pyramid.security import (remember ,forget)
+from pyramid.response import Response
 
 
 
@@ -138,22 +140,39 @@ def shared_download(request):
 
 @view_config(
     route_name='login',
-    request_method='GET',
-    renderer = 'json' )
+    request_method='POST')
 def login(request):
     """ Logins in the goddamn user
     """
     #TODO write code
-    return {'login':'still undergoing '} 
+    from oauth2client import client , crypt
+    token = request.params.get('id_token')
+    id_info = client.verify_id_token(token,'687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
+    userid = id_info['sub']
+    headers = remember(request,userid )
+    response = Response()
+    response.headerlist.extend(headers)
+    return response
 
 
 @view_config(
     route_name='logout',
-    request_method= 'GET',
-    renderer = 'json',
-    permission='edit' )
+    request_method= 'GET', )
 def logout(request):
     """ Logout user throw him out 
     """
-    #TODO wirte code
-    return {'logout','still_undegoing'} 
+    headers = forget(request)
+    response = Response()
+    response.headerlist.extend(headers)
+    return response
+
+
+@view_config(
+    route_name = 'auth_test',
+    request_method = 'GET')
+def auth_test(request):
+    return Response(request. authenticated_userid)
+
+
+
+

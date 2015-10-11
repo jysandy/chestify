@@ -104,7 +104,7 @@
 
 				//send the code to the server 
 				var xhr = new XMLHttpRequest();
-				xhr.open('POST','http://localhost:8080/login');
+				xhr.open('POST',location.origin+'/login');
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onload = function(){
 					alert('the response is ' + xhr.responseText);
@@ -116,7 +116,7 @@
 				if(!bhasElement.signedIn && userSignedIn){
 					alert('we are trying to logout ');
 					var signedoutRequest = new XMLHttpRequest();
-					signedoutRequest.open('GET','http://localhost:8080/logout');
+					signedoutRequest.open('GET',location.origin+'/logout');
 					signedoutRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 					signedoutRequest.onload = function(){
 						alert('the user has signed out ' + signedoutRequest.responseText);

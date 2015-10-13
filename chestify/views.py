@@ -145,11 +145,11 @@ def login(request):
     """ Logins in the goddamn user
     """
     #TODO write code
-    from oauth2client import client , crypt
+    from oauth2client import client, crypt
     token = request.params.get('id_token')
-    id_info = client.verify_id_token(token,'687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
+    id_info = client.verify_id_token(token, '687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
     userid = id_info['sub']
-    headers = remember(request,userid )
+    headers = remember(request, userid)
     response = Response()
     response.headerlist.extend(headers)
     return response
@@ -157,7 +157,7 @@ def login(request):
 
 @view_config(
     route_name='logout',
-    request_method= 'GET', )
+    request_method= 'GET')
 def logout(request):
     """ Logout user throw him out 
     """

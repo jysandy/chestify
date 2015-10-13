@@ -4,9 +4,8 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from sqlalchemy.orm.exc import NoResultFound
 from .filetree import FileTree
 from .models import DBSession, User, Link
-from pyramid.security import (remember ,forget)
+from pyramid.security import (remember, forget)
 from pyramid.response import Response
-
 
 
 @view_config(route_name='home',
@@ -25,23 +24,23 @@ def list_files(request):
     s3 = boto3.resource('s3')
     user = request.matchdict['user_id']
     
-    #All the files of the user.
+    # All the files of the user.
     items = [item for item in s3.Bucket('chestify').objects.all() \
-                  if item.key.startswith(user)]
+             if item.key.startswith(user)]
     
-    #Update the data usage in the database.
+    # Update the data usage in the database.
     user_entry = DBSession.query(User).filter_by(uid=user).one()
     user_entry.data_used = sum(item.size for item in items)
     
     def remove_userid(path, userid):
-        #Removes the userid prefix from a path.
+        # Removes the userid prefix from a path.
         return path.replace(userid+'/', '')
     
     def get_info(s3_object):
-        #Gets the size and last modified date of an S3 object.
-        return {'size':s3_object.size, 'last_modified':str(s3_object.last_modified)}
+        # Gets the size and last modified date of an S3 object.
+        return {'size': s3_object.size, 'last_modified': str(s3_object.last_modified)}
     
-    #Build the JSON.
+    # Build the JSON.
     ft = FileTree()
     for item in items:
         ft.add_path(remove_userid(item.key, user), get_info(item))
@@ -59,9 +58,9 @@ def download_url(request):
     """
     client = boto3.client('s3')
     url = client.generate_presigned_url('get_object',
-                                        Params={'Bucket':'chestify', 'Key':request.params['key']},
+                                        Params={'Bucket': 'chestify', 'Key': request.params['key']},
                                         ExpiresIn=30)
-    return {'url':url}
+    return {'url': url}
 
 
 @view_config(route_name='upload-url',
@@ -74,7 +73,7 @@ def upload_url(request):
     """
     client = boto3.client('s3')
     url = client.generate_presigned_url('put_object',
-                                        Params={'Bucket':'chestify', 'Key':request.params['path']},
+                                        Params={'Bucket': 'chestify', 'Key': request.params['path']},
                                         ExpiresIn=30)
     return {'url':url}
 
@@ -93,9 +92,9 @@ def create_directory(request):
     new_dir = s3.Object(bucket_name='chestify', key=key)
     response = new_dir.put(Body=b'')
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return {'result':'success'}
+        return {'result': 'success'}
     else:
-        return {'result':'failure'}
+        return {'result': 'failure'}
     
 
 @view_config(route_name='generate-shared',
@@ -110,16 +109,16 @@ def generate_shared(request):
     """
     key = request.matchdict['user_id'] + '/' + request.params['path']
     
-    #Check if this key exists.
+    # Check if this key exists.
     s3 = boto3.resource('s3')
-    users_keys = [item.key for item in s3.Bucket('chestify').objects.all() \
+    users_keys = [item.key for item in s3.Bucket('chestify').objects.all()
                   if item.key.startswith(request.matchdict['user_id'])]
     if key not in users_keys:
         return HTTPBadRequest()
         
     link = Link(key=key)
     DBSession.add(link)
-    return {'result':'success'}
+    return {'result': 'success'}
 
 
 @view_config(route_name='shared-download',
@@ -133,7 +132,7 @@ def shared_download(request):
         return HTTPNotFound()
     client = boto3.client('s3')
     url = client.generate_presigned_url('get_object',
-                                        Params={'Bucket':'chestify', 'Key':link.key},
+                                        Params={'Bucket': 'chestify', 'Key': link.key},
                                         ExpiresIn=30)
     return HTTPFound(location=url)
 
@@ -144,7 +143,7 @@ def shared_download(request):
 def login(request):
     """ Logins in the goddamn user
     """
-    #TODO write code
+    # TODO write code
     from oauth2client import client, crypt
     token = request.params.get('id_token')
     id_info = client.verify_id_token(token, '687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
@@ -168,8 +167,8 @@ def logout(request):
 
 
 @view_config(
-    route_name = 'auth_test',
-    request_method = 'GET')
+    route_name='auth_test',
+    request_method='GET')
 def auth_test(request):
     return Response(request. authenticated_userid)
 

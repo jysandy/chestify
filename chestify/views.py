@@ -4,8 +4,9 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from sqlalchemy.orm.exc import NoResultFound
 from .filetree import FileTree
 from .models import DBSession, User, Link
-from pyramid.security import (remember, forget)
+from pyramid.security import remember, forget
 from pyramid.response import Response
+from .utils import require_login
 
 
 @view_config(route_name='home',
@@ -17,15 +18,15 @@ def my_view(request):
 @view_config(route_name='list',
              renderer='json',
              request_method='GET',
-             permission='edit')
+             decorator=require_login)
 def list_files(request):
     """ Lists the directory tree of the user in JSON format.
     """
     s3 = boto3.resource('s3')
-    user = request.matchdict['user_id']
+    user = request.authenticated_user
     
     # All the files of the user.
-    items = [item for item in s3.Bucket('chestify').objects.all() \
+    items = [item for item in s3.Bucket('chestify').objects.all()
              if item.key.startswith(user)]
     
     # Update the data usage in the database.
@@ -52,13 +53,14 @@ def list_files(request):
              renderer='json',
              request_method='GET',
              request_param='key',
-             permission='edit')
+             decorator=require_login)
 def download_url(request):
     """ Generates a presigned download URL for the given file.
     """
+    user_id = request.authenticated_user
     client = boto3.client('s3')
     url = client.generate_presigned_url('get_object',
-                                        Params={'Bucket': 'chestify', 'Key': request.params['key']},
+                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['key']},
                                         ExpiresIn=30)
     return {'url': url}
 
@@ -67,27 +69,28 @@ def download_url(request):
              renderer='json',
              request_method='GET',
              request_param='path',
-             permission='edit')
+             decorator=require_login)
 def upload_url(request):
     """ Generates a presigned upload URL for the given path.
     """
+    user_id = request.authenticated_user
     client = boto3.client('s3')
     url = client.generate_presigned_url('put_object',
-                                        Params={'Bucket': 'chestify', 'Key': request.params['path']},
+                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['path']},
                                         ExpiresIn=30)
-    return {'url':url}
+    return {'url': url}
 
 
 @view_config(route_name='create-dir',
              renderer='json',
              request_method='POST',
-             permission='edit')
+             decorator=require_login)
 def create_directory(request):
     """ Creates an empty directory.
     """
     # Assuming request.params['path'] is of the form
     # /foo/goo/bar/
-    key = request.matchdict['user_id'] + '/' + request.params['path'] + '.dir'
+    key = request.authenticated_user + '/' + request.params['path'] + '.dir'
     s3 = boto3.resource('s3')
     new_dir = s3.Object(bucket_name='chestify', key=key)
     response = new_dir.put(Body=b'')
@@ -100,7 +103,7 @@ def create_directory(request):
 @view_config(route_name='generate-shared',
              renderer='json',
              request_method='POST',
-             permission='edit')
+             decorator=require_login)
 def generate_shared(request):
     """ Generates a shareable link for the given file.
         Expects a form parameter called 'path'. This should be

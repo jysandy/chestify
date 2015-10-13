@@ -17,7 +17,8 @@ requires = [
     'pyramid_tm',
     'zope.sqlalchemy',
     'psycopg2',
-    'boto3'
+    'boto3',
+    'google-api-python-client'
     ]
 
 setup(name='chestify',

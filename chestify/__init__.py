@@ -2,7 +2,6 @@ import os
 
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.session import SignedCookieSessionFactory
 from pyramid.config import Configurator
 import sqlalchemy
 
@@ -13,18 +12,16 @@ from .models import DBSession, Base
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    config = Configurator(
-        settings=settings, 
-        root_factory='.resources.Root')
+    config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
 
-    #Database connection
+    # Database connection
     def read_local_db_creds():
         if os.path.isfile('creds.txt'):
             with open('creds.txt') as inf:
                 return tuple(inf.read().split('\n')[:2])
         else:
-            return (None, None)
+            return None, None
 
     local_uname, local_pwd = read_local_db_creds()
     username = os.environ.get('CHESTIFY_DB_USER', local_uname)
@@ -49,17 +46,17 @@ def main(global_config, **settings):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
-    #Routes
+    # Routes
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
-    config.add_route('list', '/{user_id}/list')
-    config.add_route('download-url', '/{user_id}/download-url')
-    config.add_route('upload-url', '/{user_id}/upload-url')
-    config.add_route('create-dir', '/{user_id}/makedir')
-    config.add_route('generate-shared', '/{user_id}/generate-shared')
+    config.add_route('list', '/list')
+    config.add_route('download-url', '/download-url')
+    config.add_route('upload-url', '/upload-url')
+    config.add_route('create-dir', '/makedir')
+    config.add_route('generate-shared', '/generate-shared')
     config.add_route('shared-download', '/shared')
-    config.add_route('login','/login')
-    config.add_route('logout','/logout')
-    config.add_route('auth_test','/auth')
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
+    config.add_route('auth_test', '/auth')
     config.scan()
     return config.make_wsgi_app()

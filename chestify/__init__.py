@@ -29,8 +29,12 @@ def main(global_config, **settings):
     host = os.environ.get('OPENSHIFT_POSTGRESQL_DB_HOST', '127.0.0.1')
     port = os.environ.get('OPENSHIFT_POSTGRESQL_PORT', '5432')
     database = 'chestify'
-    connect_url = sqlalchemy.engine.url.URL(username=username, password=password,
-                    host=host, port=port, database=database, drivername='postgresql')
+    connect_url = sqlalchemy.engine.url.URL(username=username,
+                                            password=password,
+                                            host=host,
+                                            port=port,
+                                            database=database,
+                                            drivername='postgresql')
 
     engine = sqlalchemy.create_engine(connect_url)
     DBSession.configure(bind=engine)

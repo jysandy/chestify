@@ -1,5 +1,5 @@
 import unittest
-
+import transaction
 from pyramid import testing
 
 
@@ -71,7 +71,7 @@ class FileTreeTests(unittest.TestCase):
             'files': dict()
         }
         self.assertEqual(ft.fs, expected)
-    
+
     def test_file_tree(self):
         from .filetree import FileTree
         ft = FileTree()
@@ -112,9 +112,37 @@ class FileTreeTests(unittest.TestCase):
         self.assertEqual(ft.fs, expected)
     
 
+def _init_testing_db():
+    from sqlalchemy import create_engine
+    from .models import (
+        DBSession,
+        User,
+        Link,
+        Base
+    )
+    engine = create_engine('sqlite://')
+    Base.metadata.create_all(engine)
+    DBSession.configure(bind=engine)
+    with transaction.manager:
+        user = User(uid='sandy', email='uhuhu@gmail.com', data_used=15)
+        DBSession.add(user)
+    return DBSession
+
+
 class ViewTests(unittest.TestCase):
     def setUp(self):
+        self.session = _init_testing_db()
         self.config = testing.setUp()
 
     def tearDown(self):
+        self.session.remove()
         testing.tearDown()
+
+    def test_list_files(self):
+        from .views import list_files
+        from .filetree import FileTree
+        self.config.testing_securitypolicy(userid='sandy')
+        request = testing.DummyRequest()
+        request.authenticated_user = 'sandy'
+        response = list_files(request)
+        self.assertEqual(FileTree().fs, response)

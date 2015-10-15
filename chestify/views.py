@@ -11,14 +11,14 @@ from .utils import require_login
 
 @view_config(route_name='home',
              renderer='templates/index.pt')
-def my_view(request):
+def home_view(request):
     return {'project': 'chestify'}
 
 
 @view_config(route_name='list',
              renderer='json',
-             request_method='GET',
-             decorator=require_login)
+             request_method='GET')
+@require_login
 def list_files(request):
     """ Lists the directory tree of the user in JSON format.
     """
@@ -52,8 +52,8 @@ def list_files(request):
 @view_config(route_name='download-url',
              renderer='json',
              request_method='GET',
-             request_param='key',
-             decorator=require_login)
+             request_param='key')
+@require_login
 def download_url(request):
     """ Generates a presigned download URL for the given file.
     """
@@ -68,29 +68,29 @@ def download_url(request):
 @view_config(route_name='upload-url',
              renderer='json',
              request_method='GET',
-             request_param='path',
-             decorator=require_login)
+             request_param='key')
+@require_login
 def upload_url(request):
     """ Generates a presigned upload URL for the given path.
     """
     user_id = request.authenticated_userid
     client = boto3.client('s3')
     url = client.generate_presigned_url('put_object',
-                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['path']},
+                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['key']},
                                         ExpiresIn=30)
     return {'url': url}
 
 
 @view_config(route_name='create-dir',
              renderer='json',
-             request_method='POST',
-             decorator=require_login)
+             request_method='POST')
+@require_login
 def create_directory(request):
     """ Creates an empty directory.
     """
-    # Assuming request.params['path'] is of the form
+    # Assuming request.params['key'] is of the form
     # /foo/goo/bar/
-    key = request.authenticated_userid + '/' + request.params['path'] + '.dir'
+    key = request.authenticated_userid + '/' + request.params['key'] + '.dir'
     s3 = boto3.resource('s3')
     new_dir = s3.Object(bucket_name='chestify', key=key)
     response = new_dir.put(Body=b'')
@@ -102,15 +102,15 @@ def create_directory(request):
 
 @view_config(route_name='generate-shared',
              renderer='json',
-             request_method='POST',
-             decorator=require_login)
+             request_method='POST')
+@require_login
 def generate_shared(request):
     """ Generates a shareable link for the given file.
-        Expects a form parameter called 'path'. This should be
+        Expects a form parameter called 'key'. This should be
         the full path of the file to be uploaded, EXCLUDING the
         user's ID at the beginning.
     """
-    key = request.authenticated_userid + '/' + request.params['path']
+    key = request.authenticated_userid + '/' + request.params['key']
     
     # Check if this key exists.
     s3 = boto3.resource('s3')
@@ -126,7 +126,8 @@ def generate_shared(request):
 
 
 @view_config(route_name='shared-download',
-             request_method='GET')
+             request_method='GET',
+             request_param='key')
 def shared_download(request):
     """ Downloads a shared file.
     """
@@ -145,9 +146,8 @@ def shared_download(request):
     route_name='login',
     request_method='POST')
 def login(request):
-    """ Logins in the goddamn user
+    """ Logs in the goddamn user
     """
-    # TODO write code
     from oauth2client import client, crypt
     token = request.params.get('id_token')
     id_info = client.verify_id_token(token, '687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
@@ -160,7 +160,7 @@ def login(request):
 
 @view_config(
     route_name='logout',
-    request_method= 'GET')
+    request_method='GET')
 def logout(request):
     """ Logout user throw him out 
     """
@@ -168,14 +168,3 @@ def logout(request):
     response = Response()
     response.headerlist.extend(headers)
     return response
-
-
-@view_config(
-    route_name='auth_test',
-    request_method='GET')
-def auth_test(request):
-    return Response(request. authenticated_userid)
-
-
-
-

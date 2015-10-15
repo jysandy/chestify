@@ -14,30 +14,29 @@ class FileTreeTests(unittest.TestCase):
         for path in file_list:
             ft.add_path(path)
         expected = {
-            'folders' : {
-                'home' : {
-                    'folders' : {
-                        'bhas' : {
-                            'folders' : dict(),
-                            'files' : {
-                                'goo.txt' : dict()
+            'folders': {
+                'home': {
+                    'folders': {
+                        'bhas': {
+                            'folders': dict(),
+                            'files': {
+                                'goo.txt': dict()
                             }
                         },
-                        'sandy' : {
-                            'folders' : dict(),
-                            'files' : {
-                                'bar.txt' : dict()
+                        'sandy': {
+                            'folders': dict(),
+                            'files': {
+                                'bar.txt': dict()
                             }
                         }
                     },
-                    'files' : dict()
+                    'files': dict()
                 }
             },
-            'files' : dict()
+            'files': dict()
         }
         self.assertEqual(ft.fs, expected)
-    
-    
+
     def test_file_tree3(self):
         from .filetree import FileTree
         ft = FileTree()
@@ -50,30 +49,29 @@ class FileTreeTests(unittest.TestCase):
         for path in file_list:
             ft.add_path(path)
         expected = {
-            'folders' : {
-                'home' : {
-                    'folders' : {
-                        'bhas' : {
-                            'folders' : dict(),
-                            'files' : {
-                                'goo.txt' : dict()
+            'folders': {
+                'home': {
+                    'folders': {
+                        'bhas': {
+                            'folders': dict(),
+                            'files': {
+                                'goo.txt': dict()
                             }
                         },
-                        'sandy' : {
-                            'folders' : dict(),
-                            'files' : {
-                                'bar.txt' : dict()
+                        'sandy': {
+                            'folders': dict(),
+                            'files': {
+                                'bar.txt': dict()
                             }
                         }
                     },
-                    'files' : dict()
+                    'files': dict()
                 }
             },
-            'files' : dict()
+            'files': dict()
         }
         self.assertEqual(ft.fs, expected)
     
-     
     def test_file_tree(self):
         from .filetree import FileTree
         ft = FileTree()
@@ -85,31 +83,31 @@ class FileTreeTests(unittest.TestCase):
         for path in file_list:
             ft.add_path(path)
         expected = {
-            'folders' : {
-                'home' : {
-                    'folders' : {
-                        'bhas' : {
-                            'folders' : dict(),
-                            'files' : {
-                                'goo.txt' : dict()
+            'folders': {
+                'home': {
+                    'folders': {
+                        'bhas': {
+                            'folders': dict(),
+                            'files': {
+                                'goo.txt': dict()
                             }
                         },
-                        'sandy' : {
-                            'folders' : {
-                                'hue' : {
-                                    'folders' : dict(),
-                                    'files' : dict()
+                        'sandy': {
+                            'folders': {
+                                'hue': {
+                                    'folders': dict(),
+                                    'files': dict()
                                 }
                             },
-                            'files' : {
-                                'bar.txt' : dict()
+                            'files': {
+                                'bar.txt': dict()
                             }
                         }
                     },
-                    'files' : dict()
+                    'files': dict()
                 }
             },
-            'files' : dict()
+            'files': dict()
         }
         self.assertEqual(ft.fs, expected)
     
@@ -117,7 +115,6 @@ class FileTreeTests(unittest.TestCase):
 class ViewTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
-
 
     def tearDown(self):
         testing.tearDown()

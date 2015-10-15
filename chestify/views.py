@@ -22,7 +22,7 @@ def my_view(request):
 def list_files(request):
     """ Lists the directory tree of the user in JSON format.
     """
-    user = request.authenticated_user
+    user = request.authenticated_userid
     s3 = boto3.resource('s3')
 
     # All the files of the user.
@@ -30,7 +30,7 @@ def list_files(request):
              if item.key.startswith(user)]
 
     # Update the data usage in the database.
-    user_entry = DBSession.query(User).filter_by(uid=user).one()
+    user_entry = DBSession.query(User).filter(User.uid == user).one()
     user_entry.data_used = sum(item.size for item in items)
     
     def remove_userid(path, userid):
@@ -57,7 +57,7 @@ def list_files(request):
 def download_url(request):
     """ Generates a presigned download URL for the given file.
     """
-    user_id = request.authenticated_user
+    user_id = request.authenticated_userid
     client = boto3.client('s3')
     url = client.generate_presigned_url('get_object',
                                         Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['key']},
@@ -73,7 +73,7 @@ def download_url(request):
 def upload_url(request):
     """ Generates a presigned upload URL for the given path.
     """
-    user_id = request.authenticated_user
+    user_id = request.authenticated_userid
     client = boto3.client('s3')
     url = client.generate_presigned_url('put_object',
                                         Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['path']},
@@ -90,7 +90,7 @@ def create_directory(request):
     """
     # Assuming request.params['path'] is of the form
     # /foo/goo/bar/
-    key = request.authenticated_user + '/' + request.params['path'] + '.dir'
+    key = request.authenticated_userid + '/' + request.params['path'] + '.dir'
     s3 = boto3.resource('s3')
     new_dir = s3.Object(bucket_name='chestify', key=key)
     response = new_dir.put(Body=b'')
@@ -110,18 +110,19 @@ def generate_shared(request):
         the full path of the file to be uploaded, EXCLUDING the
         user's ID at the beginning.
     """
-    key = request.matchdict['user_id'] + '/' + request.params['path']
+    key = request.authenticated_userid + '/' + request.params['path']
     
     # Check if this key exists.
     s3 = boto3.resource('s3')
     users_keys = [item.key for item in s3.Bucket('chestify').objects.all()
-                  if item.key.startswith(request.matchdict['user_id'])]
+                  if item.key.startswith(request.authenticated_userid)]
     if key not in users_keys:
         return HTTPBadRequest()
         
     link = Link(key=key)
     DBSession.add(link)
-    return {'result': 'success'}
+    DBSession.commit()  # This generates link.uid
+    return {'result': 'success', 'link_id': link.uid}
 
 
 @view_config(route_name='shared-download',
@@ -130,7 +131,7 @@ def shared_download(request):
     """ Downloads a shared file.
     """
     try:
-        link = DBSession.query(Link).filter_by(uid=request.params['id']).one()
+        link = DBSession.query(Link).filter(Link.uid == request.params['id']).one()
     except NoResultFound:
         return HTTPNotFound()
     client = boto3.client('s3')

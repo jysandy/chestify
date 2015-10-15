@@ -22,13 +22,13 @@ def my_view(request):
 def list_files(request):
     """ Lists the directory tree of the user in JSON format.
     """
-    s3 = boto3.resource('s3')
     user = request.authenticated_user
-    
+    s3 = boto3.resource('s3')
+
     # All the files of the user.
     items = [item for item in s3.Bucket('chestify').objects.all()
              if item.key.startswith(user)]
-    
+
     # Update the data usage in the database.
     user_entry = DBSession.query(User).filter_by(uid=user).one()
     user_entry.data_used = sum(item.size for item in items)

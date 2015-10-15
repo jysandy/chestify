@@ -18,7 +18,8 @@ requires = [
     'zope.sqlalchemy',
     'psycopg2',
     'boto3',
-    'google-api-python-client'
+    'google-api-python-client',
+    'pyopenssl'
     ]
 
 setup(name='chestify',
@@ -39,7 +40,7 @@ setup(name='chestify',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires+['nose'],
+      tests_require=requires+['nose', 'webtest'],
       test_suite="chestify",
       entry_points="""\
       [paste.app_factory]

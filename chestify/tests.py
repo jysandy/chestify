@@ -156,3 +156,23 @@ class ViewTests(unittest.TestCase):
         request.params['key'] = 'home/foo/goo.txt'
         response = download_url(request)
         self.assertTrue(response['url'].startswith('https'))
+
+    def test_upload_url(self):
+        from .views import upload_url
+        self.config.testing_securitypolicy(userid='sandy')
+        request = testing.DummyRequest()
+        request.params['key'] = 'home/foo/goo.virus'
+        response = upload_url(request)
+        self.assertTrue(response['url'].startswith('https'))
+
+    def test_not_logged_in(self):
+        from pyramid.httpexceptions import HTTPForbidden
+        from .views import list_files, download_url, upload_url
+        request = testing.DummyRequest()
+        response = list_files(request)
+        self.assertEqual(HTTPForbidden, type(response))
+        request.params['key'] = 'home/foo/goo.txt'
+        response = download_url(request)
+        self.assertEqual(HTTPForbidden, type(response))
+        response = upload_url(request)
+        self.assertEqual(HTTPForbidden, type(response))

@@ -1,6 +1,7 @@
 import unittest
 import transaction
 from pyramid import testing
+from .models import User, Link
 
 
 class FileTreeTests(unittest.TestCase):
@@ -143,6 +144,15 @@ class ViewTests(unittest.TestCase):
         from .filetree import FileTree
         self.config.testing_securitypolicy(userid='sandy')
         request = testing.DummyRequest()
-        request.authenticated_user = 'sandy'
         response = list_files(request)
         self.assertEqual(FileTree().fs, response)
+        user = self.session.query(User).filter(User.uid == 'sandy').one()
+        self.assertEqual(0, user.data_used)
+
+    def test_download_url(self):
+        from .views import download_url
+        self.config.testing_securitypolicy(userid='sandy')
+        request = testing.DummyRequest()
+        request.params['key'] = 'home/foo/goo.txt'
+        response = download_url(request)
+        self.assertTrue(response['url'].startswith('https'))

@@ -89,7 +89,7 @@ def create_directory(request):
     """ Creates an empty directory.
     """
     # Assuming request.params['key'] is of the form
-    # /foo/goo/bar/
+    # foo/goo/bar/
     key = request.authenticated_userid + '/' + request.params['key'] + '.dir'
     s3 = boto3.resource('s3')
     new_dir = s3.Object(bucket_name='chestify', key=key)
@@ -121,13 +121,14 @@ def generate_shared(request):
         
     link = Link(key=key)
     DBSession.add(link)
-    DBSession.commit()  # This generates link.uid
+    DBSession.flush()
+    DBSession.refresh(link)  # This sets link.uid to the generated primary key
     return {'result': 'success', 'link_id': link.uid}
 
 
 @view_config(route_name='shared-download',
              request_method='GET',
-             request_param='key')
+             request_param='id')
 def shared_download(request):
     """ Downloads a shared file.
     """

@@ -24,7 +24,6 @@
         <link rel="import" href="${request.static_url('chestify:static/bower_components/google-signin/google-signin.html')}">
         <link rel="import" href="${request.static_url('chestify:static/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html')}">
         <link rel="import" href= "${request.static_url('chestify:static/request-maker.html')}">
-        <link rel="import" href= "${request.static_url('chestify:static/signin-element.html')}">
 
         	<script src="https://apis.google.com/js/platform.js" async defer></script>
         					<meta name="google-signin-client_id" content="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com">
@@ -72,7 +71,8 @@
 						scopes="https://www.googleapis.com/auth/plus.me"
 						id="gLogin" 
 						></google-signin>
-				</paper-card>
+<!-- 						<request-maker></request-maker>
+ -->				</paper-card>
 
 
 			</paper-scroll-header-panel>

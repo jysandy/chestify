@@ -144,37 +144,76 @@ def shared_download(request):
     route_name='login',
     request_method='POST')
 def login(request):
-    """ Logins in the goddamn user
+    """ Handle login for the user
     """
-    # TODO write code
+    #check if the user is already logged in
+    #log in the user if he is not logged in
+    #else send a response that he is already logged in
+    if request.authenticated_userid:
+        return Response("Already logged in ")
+    # TODO add exception handlers for google logins
     from oauth2client import client, crypt
+    google_clinet_id = request.registry.settings.get('chestify.google_client')
     token = request.params.get('id_token')
-    id_info = client.verify_id_token(token, '687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com')
-    userid = id_info['sub']
-    headers = remember(request, userid)
-    response = Response()
-    response.headerlist.extend(headers)
-    return response
+    try:
+        id_info = client.verify_id_token(token,google_clinet_id)
+        if 'error_message' in id_info:
+            return Response("Invalid token")
+        if id_info['iss'] not in ['accounts.google.com','https://accounts.google.com']:
+            raise crypt.AppIdentityError("Untrusted Issuer ")
+        userid = id_info['sub']
+        email = id_info['email']
+        print(userid, email)
+        session = request.session
+        session['email'] = email
+        headers = remember(request, userid)
+        response = Response()
+        response.headerlist.extend(headers)
+        return response
+    except crypt.AppIdentityError as e:
+        return Response('Invalid request from signin'+str(e.args))
 
 
 @view_config(
     route_name='logout',
-    request_method= 'GET')
+    request_method='GET',
+    decorator=require_login)
 def logout(request):
     """ Logout user throw him out 
     """
+    if request.session['email']:
+        del request.session['email']
     headers = forget(request)
     response = Response()
     response.headerlist.extend(headers)
     return response
 
 
-@view_config(
-    route_name='auth_test',
-    request_method='GET')
-def auth_test(request):
-    return Response(request. authenticated_userid)
-
-
+@view_config(route_name='json_test',
+    request_method='GET',
+    renderer='json')
+def json_test(request):
+    return {
+            'folders': {
+                'home': {
+                    'folders': {
+                        'bhas': {
+                            'folders': dict(),
+                            'files': {
+                                'goo.txt': dict()
+                            }
+                        },
+                        'sandy': {
+                            'folders': dict(),
+                            'files': {
+                                'bar.txt': dict()
+                            }
+                        }
+                    },
+                    'files': dict()
+                }
+            },
+            'files': dict()
+        }
 
 

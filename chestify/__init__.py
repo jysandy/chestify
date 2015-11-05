@@ -3,6 +3,7 @@ import os
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
+from pyramid.session import SignedCookieSessionFactory
 import sqlalchemy
 
 from .security import principal_callback
@@ -14,6 +15,10 @@ def main(global_config, **settings):
     """
     config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
+
+    #adding session factory
+    chestify_session_factory = SignedCookieSessionFactory(settings.get('chestify.secret'))
+    config.set_session_factory(chestify_session_factory)
 
     # Database connection
     def read_local_db_creds():
@@ -58,5 +63,7 @@ def main(global_config, **settings):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('auth_test', '/auth')
+    config.add_route('database_test','/dbtest')
+    config.add_route('json_test','/json_test')
     config.scan()
     return config.make_wsgi_app()

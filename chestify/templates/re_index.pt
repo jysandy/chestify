@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <script src="${request.static_url('chestify:static/bower_components/webcomponentsjs/webcomponents-lite.min.js')}"></script>
+  <link rel="import" href="${request.static_url('chestify:static/bower_components/google-signin/google-signin.html')}" />
+  <meta name="google-signin-client_id" content="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com" />
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <title>Chestify Online Chest</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="${request.static_url('chestify:static/css/materialize.css')}" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="${request.static_url('chestify:static/css/style.css')}" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+  <nav class="light-blue lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Your Online Chest</a>
+      <ul class="right hide-on-med-and-down">
+        <li><google-signin
+        client-id="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"
+        scopes="https://www.googleapis.com/auth/plus.login"
+        scopes="https://www.googleapis.com/auth/plus.me"
+        id="gLogin"
+        height="short"
+        ></google-signin></li>
+        <li><span id="username_id">Chestify</span></li>
+        <li><img id="user_image"></img></li>
+      </ul>
+      <ul class="right">
+        <li>
+
+        </li>
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+        <li><a href="#">Navbar Link</a></li>
+      </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+<div id="main_container_bhas">
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h1 class="header center orange-text">Chestify</h1>
+      <div class="row center">
+        <h5 class="header col s12 light">Your online storage. Our responsiblity.</h5>
+      </div>
+      <div class="row center">
+
+      </div>
+      <br><br>
+
+    </div>
+  </div>
+
+
+  <div class="container" >
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
+            <h5 class="center">Speeds up development</h5>
+
+            <p class="light">We did most of the heavy lifting for you to provide a smooth storage online with minimum hassle . Additionally, we refined animations and transitions to provide a smoother experience for users to make them feel at home when using our product.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+            <h5 class="center">User Experience Focused</h5>
+
+            <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h5 class="center">Easy to work with</h5>
+
+            <p class="light">Very Intutive user iterface which works with all the devices across all sizes.With our premium account you can pay as you increase the amount of data that you trust with us </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <br><br>
+
+    <div class="section">
+
+    </div>
+  </div>
+</div>
+  <footer class="page-footer orange">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">Company Bio</h5>
+          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job.The safety of out customer files is our utmost concern. Any amount would help support and continue development on this project and is greatly appreciated.</p>
+
+
+        </div>
+        <div class="col l6 s12">
+          <h5 class="white-text">Founders</h5>
+          <div class="col l3 s12">
+            <h6 class="white-text">V.V.Bhaskaram</h6>
+            <p class="white-text">Android Developer<br/>Language Enthusiast</p>
+          </div>
+          <div class="col l3 s12">
+            <h6 class="white-text">J.Y.Sandilya</h6>
+            <p class="white-text">Systems Engineer<br/>Graphics Enthusiast</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="${request.static_url('chestify:static/materialize.js')}"></script>
+  <script src="${request.static_url('chestify:static/js/init.js')}"></script>
+  <script>
+    $(document).ready(function(){
+      //assume that this supports template
+      //change with shadow root
+      //assign template to values
+      var $product_features = $('#product')[0].innerHTML;
+      var $main_product = $('#folder')[0].innerHTML;
+      //binding the login event
+      $('#gLogin').on('google-signin-success',function(){
+          //change this only after a successful reply from server
+          //get id token
+          var auth2 = gapi.auth2.getAuthInstance();
+          var profile = auth2.currentUser.get().getBasicProfile();
+          console.log(profile.getName());
+          if(profile){
+            $('#username_id').html(profile.getName()) ;
+          }else{
+            console.log('we need some debugging ');
+          }
+          var id_token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+          var xhr = new XMLHttpRequest();
+  				xhr.open('POST',location.origin+'/login');
+  				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  				xhr.onload = function(){
+  					alert('the response is ' + xhr.responseText);
+            if(xhr.responseText == 'accepted'){
+              $('#main_container_bhas').replaceWith($main_product);
+              //now get the list of files
+              alert('what is this ');
+              var $json_data = "";
+              var $cur_path = "" ;
+              var $files_string = function(name){
+                return '<div class="collection-item">' + name + '</div>';
+              }
+              var $folder_string = function(name){
+                return '<div class="collection-item">' + name + '</div>';
+              }
+              var $display_func = function(path){
+                var temp_path = path || "/";
+                var myNode = document.getElementById("files");
+                $cur_path = temp_path;
+                $('#cur_path').html($cur_path );
+                while (myNode.firstChild) {
+                    myNode.removeChild(myNode.firstChild);
+                }
+                var myNode = document.getElementById("folders");
+                while (myNode.firstChild) {
+                    myNode.removeChild(myNode.firstChild);
+                }
+                function get_folder_names(value , index , ar){
+                  if(value.length > 0 ){
+                    console.log(value + 'passed ');
+                    return true;
+                  }else{
+                    console.log(value + 'failed ');
+                    return false;}
+                };
+                console.log(temp_path.split('/'));
+                var folders = temp_path.split('/').filter(get_folder_names);
+                console.log(folders);
+                if(folders.length != 0){
+                  var obj = $json_data['folders'];
+                  console.log(JSON.stringify(obj));
+                  console.log(folders.length);
+                  for(var i = 0 ; i < folders.length ; i++ ){
+                    console.log(JSON.stringify(obj));
+                    if(i == folders.length -1 ){
+                      obj = obj[folders[i]];
+                    }else{
+                      obj = obj[folders[i]]['folders'];
+                    }
+                  }
+                  console.log('last');
+                  console.log(JSON.stringify(obj));
+                }else{
+                  var obj = $json_data;
+                }
+                for(file in obj['files']){
+                  console.log(file);
+                  $('#files').append($files_string(file));
+                }
+                for(folder in obj['folders']){
+                  console.log(folder);
+                  $('#folders').append($folder_string(folder));
+                }
+              }
+
+              $.get(location.origin + '/list',function(data , status){
+                $json_data = data;
+                $display_func();
+                alert($json_data.folders);
+                $('#cur_path').html($cur_path );
+              });
+
+              function getEventTarget(e) {
+                e = e || window.event;
+                return e.target || e.srcElement;
+              }
+              var files = document.getElementById('files');
+              files.onclick = function(event) {
+                  var target = getEventTarget(event);
+                  alert(target.innerHTML);
+              };
+              var folders = document.getElementById('folders');
+              folders.onclick = function(event){
+                var target = getEventTarget(event);
+                var name  = $cur_path + '/'+(target.innerHTML);
+                alert(name);
+                $display_func( name);
+              }
+              $('#back_button').click(function(){
+                var path = $cur_path ;
+                path  = path.split('/').filter(function (value , index , ar){
+                  if(value.length > 0 ){
+                    console.log(value + 'passed ');
+                    return true;
+                  }else{
+                    console.log(value + 'failed ');
+                    return false;}
+                }).slice(0,-1).join('/');
+                console.log(path + '********');
+                $display_func('/'+path);
+              });
+              $('#file_upload').bind('change', function() {
+                //this.files[0].size gets the size of your file.
+                alert("Size of the file uploaded " + this.files[0].size);
+              });
+              $('#create_directory').click(function(){
+                $.post(location.origin+'/makedir' , {key:$('#dir_name').val()},function(data,status){
+                  alert(data + 'data');
+                });
+                $.get(location.origin + '/list' , function(data,status){
+                  $json_data = data;
+                  $display_func($cur_path);
+                });
+              });
+            }else{
+              alert(xhr.responseText);
+              $('#gLogin').signOut();
+            }
+  				}
+  				xhr.send('id_token='+id_token );
+
+      });
+      //binding the logout event
+      $('#gLogin').on('google-signed-out',function(){
+        $('#main_container_bhas').replaceWith($product_features);
+        $('#username_id').html('Chestify');
+        var signedoutRequest = new XMLHttpRequest();
+        signedoutRequest.open('GET',location.origin+'/logout');
+        signedoutRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        signedoutRequest.onload = function(){
+          if(signedoutRequest.status != 200){return;}
+          alert('the user has signed out ' + signedoutRequest.responseText);
+        }
+        signedoutRequest.send();
+      });
+    });
+  </script>
+  <template id="folder">
+    <div id="main_container_bhas">
+      <div class="container">
+        <div class="row l8 s12">
+          <div class="card-panel #bdbdbd grey lighten-1 white-text">
+            <span id="cur_path">Folder Name here</span>
+            <a href="#!" class="right #757575 waves-effect waves-light btn-flat" id="back_button">Back</a>
+
+          </div>
+        </div>
+        <div class="row l8 s12">
+          <!-- use this to show uploading things  -->
+          <h4 class="grey-text">Folders</h4>
+          <div class="l3 s12">
+            <div id="folders" class="collection">
+              <div class="collection-item"> name  <a href="#!" class="secondary-content"><i class="material-icons">input</i></a></div>
+              <a href="#!" class="collection-item" >Some</a>
+              <a href="#!" class="collection-item">Some</a>
+            </div>
+          </div>
+          <h4 class="grey-text">Files</h4>
+            <div class="l3 s12">
+              <div id="files" class="collection">
+                <a href="#!" class="collection-item">Other </a>
+                <a href="#!" class="collection-item">Other </a>
+                <a href="#!" class="collection-item">Other </a>
+              </div>
+            </div>
+        </div>
+        <div class="row l8 s12">
+          <form action="#">
+             <div class="file-field input-field">
+               <div class="btn">
+                 <span>File</span>
+                 <input type="file" id="file_upload">
+               </div>
+               <div class="file-path-wrapper">
+                 <input class="file-path validate" type="text">
+               </div>
+               <a href="#!" class="waves-effect waves-light btn right">upload</a>
+             </div>
+           </form>
+           <!-- <div ></div> -->
+           <form action="#">
+             <div class="input-field col l12 s12">
+               <input id="dir_name" placeholder="New Directory Name" type="text" class="validate left">
+               <a class="waves-effect waves-light modal-trigger btn right" id="create_directory" href="#!">Create Folder</a>
+             </div>
+           </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </template>
+  <template id="product">
+    <div id="main_container_bhas">
+      <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+          <br><br>
+          <h1 class="header center orange-text">Chestify</h1>
+          <div class="row center">
+            <h5 class="header col s12 light">Your online storage. Our responsiblity.</h5>
+          </div>
+          <br><br>
+        </div>
+      </div>
+      <div class="container" >
+        <div class="section">
+          <div class="row">
+            <div class="col s12 m4">
+              <div class="icon-block">
+                <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
+                <h5 class="center">Speeds up development</h5>
+                <p class="light">We did most of the heavy lifting for you to provide a smooth storage online with minimum hassle . Additionally, we refined animations and transitions to provide a smoother experience for users to make them feel at home when using our product.</p>
+              </div>
+            </div>
+            <div class="col s12 m4">
+              <div class="icon-block">
+                <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+                <h5 class="center">User Experience Focused</h5>
+                <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
+              </div>
+            </div>
+            <div class="col s12 m4">
+              <div class="icon-block">
+                <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+                <h5 class="center">Easy to work with</h5>
+                <p class="light">Very Intutive user iterface which works with all the devices across all sizes.With our premium account you can pay as you increase the amount of data that you trust with us </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br><br>
+      </div>
+    </div>
+  </template>
+  </body>
+</html>

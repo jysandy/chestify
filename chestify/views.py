@@ -10,7 +10,7 @@ from .utils import require_login
 
 
 @view_config(route_name='home',
-             renderer='templates/index.pt')
+             renderer='templates/re_index.pt')
 def home_view(request):
     return {'project': 'chestify'}
 
@@ -32,20 +32,20 @@ def list_files(request):
     # Update the data usage in the database.
     user_entry = DBSession.query(User).filter(User.uid == user).one()
     user_entry.data_used = sum(item.size for item in items)
-    
+
     def remove_userid(path, userid):
         # Removes the userid prefix from a path.
         return path.replace(userid+'/', '')
-    
+
     def get_info(s3_object):
         # Gets the size and last modified date of an S3 object.
         return {'size': s3_object.size, 'last_modified': str(s3_object.last_modified)}
-    
+
     # Build the JSON.
     ft = FileTree()
     for item in items:
         ft.add_path(remove_userid(item.key, user), get_info(item))
-    
+
     return ft.fs
 
 
@@ -98,7 +98,7 @@ def create_directory(request):
         return {'result': 'success'}
     else:
         return {'result': 'failure'}
-    
+
 
 @view_config(route_name='generate-shared',
              renderer='json',
@@ -111,14 +111,14 @@ def generate_shared(request):
         user's ID at the beginning.
     """
     key = request.authenticated_userid + '/' + request.params['key']
-    
+
     # Check if this key exists.
     s3 = boto3.resource('s3')
     users_keys = [item.key for item in s3.Bucket('chestify').objects.all()
                   if item.key.startswith(request.authenticated_userid)]
     if key not in users_keys:
         return HTTPBadRequest()
-        
+
     link = Link(key=key)
     DBSession.add(link)
     DBSession.flush()
@@ -153,7 +153,7 @@ def login(request):
     #log in the user if he is not logged in
     #else send a response that he is already logged in
     if request.authenticated_userid:
-        return Response("Already logged in ")
+        return Response("relogin")
     # TODO add exception handlers for google logins
     from oauth2client import client, crypt
     google_clinet_id = request.registry.settings.get('chestify.google_client')
@@ -167,28 +167,36 @@ def login(request):
         userid = id_info['sub']
         email = id_info['email']
         print(userid, email)
+        #now check if user is already present
+        if (DBSession.query(User).filter(User.uid == userid).count()) == 0:
+            DBSession.add(User(uid = userid , email = email , data_used = 0 ))
+            print('Added user to the database ')
+        else:
+            print('User already presesnt ')
         session = request.session
         session['email'] = email
         headers = remember(request, userid)
         response = Response()
         response.headerlist.extend(headers)
+        response.text = 'accepted'
         return response
     except crypt.AppIdentityError as e:
-        return Response('Invalid request from signin'+str(e.args))
+        return Response('rejected')
 
 
 @view_config(
     route_name='logout',
-    request_method='GET',
-    decorator=require_login)
+    request_method='GET')
+@require_login
 def logout(request):
-    """ Logout user throw him out 
+    """ Logout user throw him out
     """
-    if request.session['email']:
+    if request.session.get('email'):
         del request.session['email']
     headers = forget(request)
     response = Response()
     response.headerlist.extend(headers)
+    response.text = "logged out "
     return response
 
 
@@ -218,3 +226,10 @@ def json_test(request):
             },
             'files': dict()
         }
+
+
+@view_config(route_name="sample_template",
+             request_method="GET",
+             renderer="templates/folder-display.pt")
+def sample_template(request):
+    return {"temp":"we are what we are "}

@@ -1,0 +1,17 @@
+<html>
+	<head>
+		    			<meta charset="utf-8">
+  						<meta name="description" content="">
+  						<meta name="viewport" content="width=device-width, initial-scale=1">
+		  				<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+		  				<meta name="mobile-web-app-capable" content="yes">
+		<title>Polymer Testing </title>
+        	<script src="${request.static_url('chestify:static/bower_components/webcomponentsjs/webcomponents-lite.min.js')}"></script>
+        <link rel="import" href="${request.static_url('chestify:static/folder-view.html')}">
+<!-- 
+        	<script src="https://apis.google.com/js/platform.js" async defer></script>
+        					<meta name="google-signin-client_id" content="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"> -->
+		</head>
+		<body>
+			<folder-view></folder-view>
+		</body>

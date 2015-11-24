@@ -1,0 +1,28 @@
+<dom-module id="folder-view">
+	<link rel ="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+	<!-- 
+	<link rel="import" type="html" href="folder-list.html">
+	<link rel="import" type="html" href="files-list.html">
+ -->	<template>
+	    <iron-ajax
+		auto="true" 	
+	 	url="/json_test"
+	 	handle-as="json"
+	 	last-response={{ajaxResponse}}
+	 	on-response="handleResponse"
+                id="ajax_elem">
+	 	</iron-ajax>
+	</template>
+    <script>
+        Polymer({
+            is:'folder-view',
+            listeners:{
+            'ajax_elem.response':'useResponse',
+            },
+            useResponse:function(res,some){
+            	alert(ajaxResponse);
+            }
+        })
+    </script>
+</dom-module>

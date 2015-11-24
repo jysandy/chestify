@@ -70,5 +70,6 @@ def main(global_config, **settings):
     config.add_route('database_test','/dbtest')
     config.add_route('json_test','/json_test')
     config.add_route('sample_template','/sample_template')
+    config.add_route('update_size','/update_size')
     config.scan()
     return config.make_wsgi_app()

@@ -61,24 +61,35 @@ def download_url(request):
     client = boto3.client('s3')
     url = client.generate_presigned_url('get_object',
                                         Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['key']},
-                                        ExpiresIn=30)
+                                        ExpiresIn=300)
     return {'url': url}
 
 
 @view_config(route_name='upload-url',
              renderer='json',
-             request_method='GET',
-             request_param='key')
+             request_method='POST',
+             request_param=['key','file_size'])
 @require_login
 def upload_url(request):
     """ Generates a presigned upload URL for the given path.
     """
     user_id = request.authenticated_userid
     client = boto3.client('s3')
-    url = client.generate_presigned_url('put_object',
-                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' + request.params['key']},
-                                        ExpiresIn=30)
-    return {'url': url}
+    size = int(request.params['file_size'])
+    user = DBSession.query(User).filter(User.uid == user_id).one()
+    url = ""
+    message =  ""
+    print(size + user.data_used)
+    print(20000000)
+    print(20000000 < size +user.data_used)
+    if (20000000 > size +user.data_used):
+        url = client.generate_presigned_url('put_object',
+                                        Params={'Bucket': 'chestify', 'Key': user_id + '/' +request.params['key']},
+                                        ExpiresIn=300)
+        message = "success"
+    else:
+        message = "failed"
+    return {'url': url , 'message':message}
 
 
 @view_config(route_name='create-dir',

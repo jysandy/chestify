@@ -15,18 +15,22 @@
   <link href="${request.static_url('chestify:static/css/style.css')}" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
 <body>
+  <ul id="user_drop_down" class="dropdown-content">
+    <li class="divider"></li>
+    <li><a><span id="username_id">Chestify User</span></a></li>
+    <li><a href="#!"><google-signin
+    client-id="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"
+    scopes="https://www.googleapis.com/auth/plus.login"
+    scopes="https://www.googleapis.com/auth/plus.me"
+    id="gLogin"
+    height="medium"
+    ></google-signin></a></li>
+  </ul>
   <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Your Online Chest</a>
       <ul class="right hide-on-med-and-down">
-        <li><google-signin
-        client-id="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"
-        scopes="https://www.googleapis.com/auth/plus.login"
-        scopes="https://www.googleapis.com/auth/plus.me"
-        id="gLogin"
-        height="short"
-        ></google-signin></li>
-        <li><span id="username_id">Chestify</span></li>
-        <li><img id="user_image"></img></li>
+
+        <li><a class="dropdown-button" href="#!" data-activates="user_drop_down">Chestify<i class="material-icons right">arrow_drop_down</i></a></li>
       </ul>
       <ul class="right">
         <li>
@@ -219,7 +223,14 @@
                   $('#folders').append($folder_string(folder));
                 }
               }
-
+              function listRequest (){
+                $.get(location.origin + '/list',function(data, status){
+                  $json_data = data;
+                  $display_func();
+                  alert($json_data.folders);
+                  $('#cur_path').html($cur_path);
+                });
+              }
               $.get(location.origin + '/list',function(data , status){
                 $json_data = data;
                 $display_func();
@@ -242,7 +253,7 @@
                 var name  = $cur_path + '/'+(target.innerHTML);
                 alert(name);
                 $display_func( name);
-              }
+              };
               $('#back_button').click(function(){
                 var path = $cur_path ;
                 path  = path.split('/').filter(function (value , index , ar){
@@ -256,9 +267,60 @@
                 console.log(path + '********');
                 $display_func('/'+path);
               });
+              var $file_size = 0 ;
               $('#file_upload').bind('change', function() {
-                //this.files[0].size gets the size of your file.
                 alert("Size of the file uploaded " + this.files[0].size);
+                $file_size = this.files[0].size;
+              });
+              $('#upload_file').click(function(){
+                if($('#file_upload').val()){
+                alert($('#file_upload').val());
+                $.post(
+                  location.origin + '/upload-url',
+                  {
+                    'key':$cur_path + $('#file_upload').val(),
+                    'file_size':$file_size
+                  } ,
+                  function(data,status){
+                      function progressHandlingFunction(e){
+                        if(e.lenghtComputable){
+                          $('progress').attr({value:e.laoded , max:e.total});
+                        }
+                      }
+                      if(data['message'] == 'success'){
+                        alert('Uploading to ' + data['url']);
+                        var form_data = new FormData();
+                        if($('#file_upload').file){
+                          alert('we have ');
+                        }
+                        var file = '';
+                        form_data.append('file',$('#file_upload').file);
+                        $.ajax({
+                          url:data['url'],
+                          data :form_data,
+                          mimeType: "multipart/form-data",
+                          type:"PUT",
+                          cache :false,
+                          xhr:function(){
+                            var myxhr =  $.ajaxSettings.xhr();
+                            if(myxhr.upload){
+                              myXhr.upload.addEventListener('progress',progressHandlingFunction, false);
+                            }
+                            return myxhr;
+                          },
+                          success: function(data){
+                              alert(data);
+                          }
+                         });
+                        $('#upload_form').attr({'action':data['url']}).submit();
+                      }else{
+                        alert('Couldnt upload values ' + data['message']);
+                      }
+                    }
+                  );
+                }else{
+                  alert('Please select the value ');
+                }
               });
               $('#create_directory').click(function(){
                 $.post(location.origin+'/makedir' , {key:$('#dir_name').val()},function(data,status){
@@ -271,7 +333,7 @@
               });
             }else{
               alert(xhr.responseText);
-              $('#gLogin').signOut();
+              $('google-signin')[0].signOut();
             }
   				}
   				xhr.send('id_token='+id_token );
@@ -322,19 +384,26 @@
             </div>
         </div>
         <div class="row l8 s12">
-          <form action="#">
+
+          <!-- Form submission  -->
+
+          <form action="#" id="upload_form" method="put" enctype="multipart/form-data">
              <div class="file-field input-field">
                <div class="btn">
                  <span>File</span>
-                 <input type="file" id="file_upload">
+                 <input name="file" type="file" id="file_upload">
                </div>
                <div class="file-path-wrapper">
                  <input class="file-path validate" type="text">
                </div>
-               <a href="#!" class="waves-effect waves-light btn right">upload</a>
+               <a href="#!" class="waves-effect waves-light btn right" id="upload_file">upload</a>
              </div>
            </form>
+           <progress></progress>
            <!-- <div ></div> -->
+
+
+           <!--  create directory -->
            <form action="#">
              <div class="input-field col l12 s12">
                <input id="dir_name" placeholder="New Directory Name" type="text" class="validate left">

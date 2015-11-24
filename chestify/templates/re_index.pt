@@ -17,7 +17,10 @@
 <body>
   <ul id="user_drop_down" class="dropdown-content">
     <li class="divider"></li>
-    <li><a><span id="username_id">Chestify User</span></a></li>
+    <li class="chip">
+        <img class="user_image"src="" alt=""/>
+        <a><span id="username_id" class=".user_name">Chestify User</span></a>
+    </li>
     <li><a href="#!"><google-signin
     client-id="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"
     scopes="https://www.googleapis.com/auth/plus.login"
@@ -31,6 +34,7 @@
       <ul class="right hide-on-med-and-down">
 
         <li><a class="dropdown-button" href="#!" data-activates="user_drop_down">Chestify<i class="material-icons right">arrow_drop_down</i></a></li>
+        <!-- <li><a href="#!"></a></li> -->
       </ul>
       <ul class="right">
         <li>
@@ -39,7 +43,22 @@
       </ul>
 
       <ul id="nav-mobile" class="side-nav">
-        <li><a href="#">Navbar Link</a></li>
+        <li><h4 class="white-text"><a href="#">Chestify</a></h4></li>
+        <li>
+          <a>
+            <div class="chip">
+              <img class="user_image" src="" alt=""/>
+              <span id="username_id" class="user_name">Chestify User</span>
+            </div>
+          </a>
+        </li>
+        <li><a href="#!"><google-signin
+        client-id="687216091613-fqbv5u4cba3bpa6ihqgh8qr1h93klvap.apps.googleusercontent.com"
+        scopes="https://www.googleapis.com/auth/plus.login"
+        scopes="https://www.googleapis.com/auth/plus.me"
+        id="gLogin"
+        height="small"
+        ></google-signin></a></li>
       </ul>
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>
@@ -65,11 +84,11 @@
     <div class="section">
 
       <!--   Icon Section   -->
-      <div class="row">
+      <div class="row" style="text-align:center;">
         <div class="col s12 m4">
           <div class="icon-block">
             <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-            <h5 class="center">Speeds up development</h5>
+            <h5 class="center">Speed</h5>
 
             <p class="light">We did most of the heavy lifting for you to provide a smooth storage online with minimum hassle . Additionally, we refined animations and transitions to provide a smoother experience for users to make them feel at home when using our product.</p>
           </div>
@@ -131,14 +150,31 @@
       </div>
     </div>
   </footer>
-
-
+  <div id="loadingDiv" class="container" style="width:100%;height:100%;background-color:rgba(255,255,255,0.3);z-index:500;position:absolute;top:0;left:0">
+    <div class="preloader-wrapper big active s12 l3 offset-s4"  >
+      <div class="spinner-layer spinner-blue-only">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="${request.static_url('chestify:static/materialize.js')}"></script>
   <script src="${request.static_url('chestify:static/js/init.js')}"></script>
   <script>
     $(document).ready(function(){
+      $call_once = false;
+      var $collapse_func = function(){
+        $('.collapsible').collapsible({
+          accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+        });
+      };
       //assume that this supports template
       //change with shadow root
       //assign template to values
@@ -153,6 +189,8 @@
           console.log(profile.getName());
           if(profile){
             $('#username_id').html(profile.getName()) ;
+            $('.user_name').html(profile.getName());
+            $('.user_image').attr('src', profile.getImageUrl()) ;
           }else{
             console.log('we need some debugging ');
           }
@@ -168,17 +206,24 @@
               alert('what is this ');
               var $json_data = "";
               var $cur_path = "" ;
-              var $files_string = function(name){
-                return '<div class="collection-item">' + name + '</div>';
+              var $files_string = function(name,size,date_created){
+                return ('<li name = "'+
+                name+
+                '"><div class="collapsible-header"><i class="material-icons">insert_drive_file</i>' +
+                 name +
+                  '</div><div class="collapsible-body orange"><p>Size : '+size+' Bytes<br/>Created : '+date_created+
+                '<br/><a class="btn"><i class="material-icons">file_download</i><span class="url_download_button" name="'+name+'">Download URL</span></a><br/>'+
+                '<br/><a class="btn"><i class="material-icons">share</i> <span class="shared_download_button" name="'+ name +'">Share URL</span></a></p>'+
+                '</div></li>');
               }
               var $folder_string = function(name){
-                return '<div class="collection-item">' + name + '</div>';
+                return '<li name="'+name+'"><div class="collapsible-header"><i class="material-icons">folder</i>' + name + '</div></li>';
               }
               var $display_func = function(path){
                 var temp_path = path || "/";
-                var myNode = document.getElementById("files");
                 $cur_path = temp_path;
-                $('#cur_path').html($cur_path );
+                $('#cur_path').html($cur_path);
+                var myNode = document.getElementById("files");
                 while (myNode.firstChild) {
                     myNode.removeChild(myNode.firstChild);
                 }
@@ -187,40 +232,82 @@
                     myNode.removeChild(myNode.firstChild);
                 }
                 function get_folder_names(value , index , ar){
-                  if(value.length > 0 ){
+                  if(value.length > 0 && value != " "){
                     console.log(value + 'passed ');
                     return true;
-                  }else{
+                  }
+                  else{
                     console.log(value + 'failed ');
-                    return false;}
+                    return false;
+                  }
                 };
-                console.log(temp_path.split('/'));
+                console.log("temp_path  = " +temp_path.split('/'));
                 var folders = temp_path.split('/').filter(get_folder_names);
-                console.log(folders);
+                console.log("folders = "+ folders);
                 if(folders.length != 0){
                   var obj = $json_data['folders'];
-                  console.log(JSON.stringify(obj));
-                  console.log(folders.length);
+                  console.log("obj value = " + JSON.stringify(obj));
+                  console.log("folders length = "+ folders.length);
                   for(var i = 0 ; i < folders.length ; i++ ){
-                    console.log(JSON.stringify(obj));
-                    if(i == folders.length -1 ){
+                    if(i == folders.length - 1 ){
                       obj = obj[folders[i]];
-                    }else{
+                    }
+                    else{
                       obj = obj[folders[i]]['folders'];
                     }
+                    console.log(JSON.stringify(obj));
                   }
-                  console.log('last');
-                  console.log(JSON.stringify(obj));
-                }else{
-                  var obj = $json_data;
+                  console.log("final = " +JSON.stringify(obj));
+                }
+                else{
+                  if(temp_path == '/'){var obj = $json_data;}
+                  else{console.log('please check this one ');}
                 }
                 for(file in obj['files']){
                   console.log(file);
-                  $('#files').append($files_string(file));
+                  var size = obj['files'][file]['size'];
+                  var date_created = obj['files'][file]['last_modified']
+                  $('#files').append($files_string(file, size , date_created));
                 }
+                $('.url_download_button').click(function(){
+                  //alert('clicked');
+                  var name = $(this).attr('name');
+                  //alert('name ' + name);
+                  var file_path = "";
+                  if( $cur_path == '/'){
+                    file_path = name;
+                  }else{
+                    file_path = $cur_path.slice(1) + '/' + name;
+                  }
+                  $.get(location.origin + '/download-url' ,{key : file_path} , function(data,status){
+                    console.log(data['url']);
+                    alert(data['url']);
+                  } );
+                  console.log('Request for file '+ name);
+                });
+                $('.shared_download_button').click(function(){
+                  //alert('clicked');
+                  var name = $(this).attr('name');
+                  //alert('name ' + name);
+                  var file_path = "";
+                  if( $cur_path == '/'){
+                    file_path = name;
+                  }else{
+                    file_path = $cur_path.slice(1) + '/' + name;
+                  }
+                  $.post(location.origin + '/generate-shared' ,{key : file_path} , function(data,status){
+                    console.log(data['link_id']);
+                    alert(data['link_id']);
+                  } );
+                  console.log('Request for file '+ name);
+                });
                 for(folder in obj['folders']){
                   console.log(folder);
                   $('#folders').append($folder_string(folder));
+                }
+                if(!$call_once){
+                  $collapse_func();
+                  $call_once  = true;
                 }
               }
               function listRequest (){
@@ -234,34 +321,47 @@
               $.get(location.origin + '/list',function(data , status){
                 $json_data = data;
                 $display_func();
-                alert($json_data.folders);
+                console.log($json_data.folders);
                 $('#cur_path').html($cur_path );
               });
-
               function getEventTarget(e) {
                 e = e || window.event;
                 return e.target || e.srcElement;
               }
-              var files = document.getElementById('files');
-              files.onclick = function(event) {
-                  var target = getEventTarget(event);
-                  var name = (target.innerHTML);
-                  $.get(location.origin)
-              };
-              var folders = document.getElementById('folders');
-              folders.onclick = function(event){
-                var target = getEventTarget(event);
-                var name  = $cur_path + '/'+(target.innerHTML);
-                alert(name);
+
+              // $('#files').on('click',"li",function(){
+              //   var name = this.getAttribute('name');
+              //   var file_path = "";
+              //   if( $cur_path == '/'){
+              //     file_path = name;
+              //   }else{
+              //     file_path = $cur_path.slice(1) + '/' + name;
+              //   }
+              //   $.get(location.origin + '/download-url' ,{key : file_path} , function(data,status){
+              //     console.log(data['url']);
+              //     alert(data['url']);
+              //   } );
+              //   console.log('Request for file '+ name);
+              // });
+              $('#folders').on("click","li",function(){
+                var name = (this.getAttribute('name'));
+                if($cur_path == '/'){
+                  name = "/"+(name);
+                }
+                else{
+                  name  = $cur_path + '/'+(name);
+                }
+                console.log(name);
                 $display_func( name);
-              };
+              });
               $('#back_button').click(function(){
                 var path = $cur_path ;
                 path  = path.split('/').filter(function (value , index , ar){
                   if(value.length > 0 ){
                     console.log(value + 'passed ');
                     return true;
-                  }else{
+                  }
+                  else{
                     console.log(value + 'failed ');
                     return false;}
                 }).slice(0,-1).join('/');
@@ -285,7 +385,7 @@
                 $.post(
                   location.origin + '/upload-url',
                   {
-                    'key':$cur_path + $('#file_upload').val(),
+                    'key':file_path,
                     'file_size':$file_size
                   } ,
                   function(data,status){
@@ -302,11 +402,7 @@
                           alert(data['url']);
                           var xhr = new XMLHttpRequest();
                           xhr.open('PUT',data['url'],true);
-                          xhr.upload.addEventListener('progress',function(e){
-                            if(e.lengthComputable){
-                              $('progress').attr({value:e.laoded , max:e.total});
-                            }
-                          });
+                          xhr.upload.addEventListener('progress',progressHandlingFunction);
                           var reader = new FileReader();
                           reader.onload = function(evt){
 
@@ -341,18 +437,30 @@
                 }
               });
               $('#create_directory').click(function(){
-                if($('#dir_name').val != ""){
-                $.post(location.origin+'/makedir' , {key:$('#dir_name').val()},function(data,status){
-                  alert(data + 'data');
-                });
-                $.get(location.origin + '/list' , function(data,status){
-                  $json_data = data;
-                  console.log(JSON.stringify($json_data));
-                  $display_func($cur_path);
-                });
-              }
+                if($.trim($('#dir_name').val()) != "" ){
+                  var file_path = "";
+                  if($cur_path == '/'){
+                    file_path = $.trim($('#dir_name').val());
+                  }
+                  else{
+                    file_path = $cur_path.slice(1) +'/' +$.trim($('#dir_name').val())
+                  }
+                  $.post(location.origin+'/makedir' , {key:file_path },function(data,status){
+                    alert(data + 'data');
+                    $.get(location.origin + '/list' , function(data,status){
+                      $json_data = data;
+                      console.log("result from data = " + JSON.stringify($json_data));
+                      $display_func($cur_path);
+                    });
+                  });
+
+                }
+                else{
+                  console.log('not today');
+                }
               });
-            }else{
+            }
+            else{
               alert(xhr.responseText);
               $('google-signin')[0].signOut();
             }
@@ -373,65 +481,83 @@
         }
         signedoutRequest.send();
       });
+      var $loading = $('#loadingDiv').hide();
+      $(document)
+        .ajaxStart(function () {
+          $loading.show();
+        })
+        .ajaxStop(function () {
+          $loading.hide();
+        });
     });
   </script>
   <template id="folder">
     <div id="main_container_bhas">
       <div class="container">
+        <br/><br/>
+        <br/><br/>
         <div class="row l8 s12">
-          <div class="card-panel #bdbdbd grey lighten-1 white-text">
-            <span id="cur_path">Folder Name here</span>
+          <div class="card-panel light-blue lighten-1 ">
+            Path : <span id="cur_path">Folder Name here</span>
             <a href="#!" class="right #757575 waves-effect waves-light btn-flat" id="back_button">Back</a>
-
-          </div>
-        </div>
-        <div class="row l8 s12">
-          <!-- use this to show uploading things  -->
-          <h4 class="grey-text">Folders</h4>
-          <div class="l3 s12">
-            <div id="folders" class="collection">
-              <div class="collection-item"> name  <a href="#!" class="secondary-content"><i class="material-icons">input</i></a></div>
-              <a href="#!" class="collection-item" >Some</a>
-              <a href="#!" class="collection-item">Some</a>
-            </div>
-          </div>
-          <h4 class="grey-text">Files</h4>
+            <h4 class="white-text">Folders</h4>
             <div class="l3 s12">
-              <div id="files" class="collection">
-                <a href="#!" class="collection-item">Other </a>
-                <a href="#!" class="collection-item">Other </a>
-                <a href="#!" class="collection-item">Other </a>
-              </div>
+              <ul id="folders" class="collapsible" data-collapsible="accordion">
+                <li>
+                  <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                  <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+                <li>
+                  <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                  <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+                <li>
+                  <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                  <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+              </ul>
             </div>
-        </div>
-        <div class="row l8 s12">
+            <h4 class="white-text">Files</h4>
+              <ul class="l3 s12">
+                <ul id="files" class="collapsible popout" data-collapsible="accordion">
+                  <<li>
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                  </li>
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                  </li>
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                  </li>
+                </ul>
+              </ul>
+            <h4 class="white-text">Utils</h4>
+            <div class="l3 s12">
+              <form action="#" id="upload_form" method="put" enctype="multipart/form-data">
+                 <div class="file-field input-field ">
+                   <div class="btn">
+                     <span>File</span>
+                     <input name="file" type="file" id="file_upload">
+                   </div>
+                   <div class="file-path-wrapper">
+                     <input class="file-path validate" type="text">
+                   </div>
+                 </div>
+               </form>
+               <a href="#!" class="waves-effect waves-light btn" id="upload_file">upload</a>
+               <form action="#">
+                 <div class="input-field">
+                   <input id="dir_name" placeholder="New Directory Name" type="text" class="validate">
+                   <a class="waves-effect waves-light modal-trigger btn" id="create_directory" href="#!">Create Folder</a>
+                 </div>
+               </form>
+            </div>
+            <div class="l3 s12">
 
-          <!-- Form submission  -->
-
-          <form action="#" id="upload_form" method="put" enctype="multipart/form-data">
-             <div class="file-field input-field">
-               <div class="btn">
-                 <span>File</span>
-                 <input name="file" type="file" id="file_upload">
-               </div>
-               <div class="file-path-wrapper">
-                 <input class="file-path validate" type="text">
-               </div>
-               <a href="#!" class="waves-effect waves-light btn right" id="upload_file">upload</a>
-             </div>
-           </form>
-           <progress></progress>
-           <!-- <div ></div> -->
-
-
-           <!--  create directory -->
-           <form action="#">
-             <div class="input-field col l12 s12">
-               <input id="dir_name" placeholder="New Directory Name" type="text" class="validate left">
-               <a class="waves-effect waves-light modal-trigger btn right" id="create_directory" href="#!">Create Folder</a>
-             </div>
-           </form>
-
+          </div>
         </div>
 
       </div>
@@ -440,7 +566,7 @@
 
   </template>
   <template id="product">
-    <div id="main_container_bhas">
+    <div id="main_container_bhas" >
       <div class="section no-pad-bot" id="index-banner">
         <div class="container">
           <br><br>
@@ -453,11 +579,11 @@
       </div>
       <div class="container" >
         <div class="section">
-          <div class="row">
+          <div class="row" style="text-align:justified;">
             <div class="col s12 m4">
               <div class="icon-block">
                 <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-                <h5 class="center">Speeds up development</h5>
+                <h5 class="center">Speed</h5>
                 <p class="light">We did most of the heavy lifting for you to provide a smooth storage online with minimum hassle . Additionally, we refined animations and transitions to provide a smoother experience for users to make them feel at home when using our product.</p>
               </div>
             </div>
@@ -483,3 +609,36 @@
   </template>
   </body>
 </html>
+<!--
+// var folders = document.getElementById('folders');
+// folders.onclick = function(event){
+//   var target = getEventTarget(event);
+//   var name  = $cur_path + '/'+(target.innerHTML);
+//   if($cur_path == '/'){
+//     name = "/"+(target.innerHTML);
+//   }
+//   else{
+//     name  = $cur_path + '/'+(target.innerHTML);
+//   }
+//   console.log(name);
+//   $display_func( name);
+// };
+
+
+// var files = document.getElementById('files');
+// files.onclick = function(event) {
+//     var target = getEventTarget(event);
+//     var name = (target.innerHTML);
+//     var file_path = "";
+//     if( $cur_path == '/'){
+//       file_path = name;
+//     }else{
+//       file_path = $cur_path.slice(1) + '/' + name;
+//     }
+//     $.get(location.origin + '/download-url' ,{key : file_path} , function(data,status){
+//       console.log(data['url']);
+//       alert(data['url']);
+//     } );
+//     console.log('Request for file '+ name);
+// };
+-->

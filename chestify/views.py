@@ -101,7 +101,7 @@ def create_directory(request):
     """
     # Assuming request.params['key'] is of the form
     # foo/goo/bar/
-    key = request.authenticated_userid + '/' + request.params['key'] + '.dir'
+    key = request.authenticated_userid + '/' + request.params['key'] + '/.dir'
     s3 = boto3.resource('s3')
     new_dir = s3.Object(bucket_name='chestify', key=key)
     response = new_dir.put(Body=b'')

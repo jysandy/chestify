@@ -114,7 +114,7 @@ class FileTreeTests(unittest.TestCase):
             'files': dict()
         }
         self.assertEqual(ft.fs, expected)
-    
+
 
 def _init_testing_db():
     from sqlalchemy import create_engine
@@ -183,6 +183,7 @@ class ViewTests(unittest.TestCase):
         self.config.testing_securitypolicy(userid='sandy')
         request = testing.DummyRequest()
         request.params['key'] = 'home/foo/goo.virus'
+        request.params['file_size'] = 400
         response = upload_url(request)
         self.assertTrue(response['url'].startswith('https'))
 
@@ -190,7 +191,7 @@ class ViewTests(unittest.TestCase):
         from chestify.views import create_directory
         self.config.testing_securitypolicy(userid='sandy')
         request = testing.DummyRequest()
-        request.params['key'] = 'home/foo/goo/'
+        request.params['key'] = 'home/foo/goo'
         response = create_directory(request)
         self.assertEqual({'result': 'success'}, response)
 

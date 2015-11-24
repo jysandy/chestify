@@ -246,10 +246,7 @@
               files.onclick = function(event) {
                   var target = getEventTarget(event);
                   var name = (target.innerHTML);
-                  if(name.slice(-4) == '.dir'){
-                    //this is a directory
-
-                  }
+                  $.get(location.origin)
               };
               var folders = document.getElementById('folders');
               folders.onclick = function(event){
@@ -281,7 +278,7 @@
                 if ($cur_path == '/'){
                   file_path = "" + $('#file_upload').val();
                 }else{
-                  file_path = $cur_path.slice(1) + $('#file_upload').val();
+                  file_path = $cur_path.slice(1)+'/' + $('#file_upload').val();
                 }
                 if($('#file_upload').val()){
                 alert($('#file_upload').val());
@@ -321,7 +318,14 @@
                             xhr.setRequestHeader('Content-Type',"");
                             xhr.send(blob);
                           }
-                          xhr.onload = function(){alert('done');};
+                          xhr.onload = function(){
+                            alert('done');
+                            $.get(location.origin + '/list' , function(data,status){
+                              $json_data = data;
+                              console.log(JSON.stringify($json_data));
+                              $display_func($cur_path);
+                            });
+                        };
                           reader.readAsBinaryString(file);
                         }else{
                           alert('Please select valid file ');
@@ -337,6 +341,7 @@
                 }
               });
               $('#create_directory').click(function(){
+                if($('#dir_name').val != ""){
                 $.post(location.origin+'/makedir' , {key:$('#dir_name').val()},function(data,status){
                   alert(data + 'data');
                 });
@@ -345,6 +350,7 @@
                   console.log(JSON.stringify($json_data));
                   $display_func($cur_path);
                 });
+              }
               });
             }else{
               alert(xhr.responseText);

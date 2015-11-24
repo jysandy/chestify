@@ -281,7 +281,10 @@
                   }
                   $.get(location.origin + '/download-url' ,{key : file_path} , function(data,status){
                     console.log(data['url']);
-                    alert(data['url']);
+                    //alert(data['url']);
+                    $('#download_file_name').html(name);
+                    $('#download_link').attr('href',data['url']);
+                    $('#modal1').openModal();
                   } );
                   console.log('Request for file '+ name);
                 });
@@ -534,6 +537,12 @@
                   </li>
                 </ul>
               </ul>
+              <div id="modal1" class="modal bottom-sheet">
+                <div class="modal-content">
+                  <h4 id="download_file_name">Modal Header</h4>
+                  <p ><a href="" id="download_link" class="btn" target="_blank">start download</a></p>
+                </div>
+              </div>
             <h4 class="white-text">Utils</h4>
             <div class="l3 s12">
               <form action="#" id="upload_form" method="put" enctype="multipart/form-data">

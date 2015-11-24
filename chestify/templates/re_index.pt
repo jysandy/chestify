@@ -300,7 +300,10 @@
                   }
                   $.post(location.origin + '/generate-shared' ,{key : file_path} , function(data,status){
                     console.log(data['link_id']);
-                    alert(data['link_id']);
+                    //alert(data['link_id']);
+                    $('#download_file_name_shared').html(name);
+                    $('#download_link_p').html(location.origin+ '/shared'+'?id='+data['link_id']);
+                    $('#modal2').openModal();
                   } );
                   console.log('Request for file '+ name);
                 });
@@ -541,6 +544,12 @@
                 <div class="modal-content">
                   <h4 id="download_file_name">Modal Header</h4>
                   <p ><a href="" id="download_link" class="btn" target="_blank">start download</a></p>
+                </div>
+              </div>
+              <div id="modal2" class="modal bottom-sheet">
+                <div class="modal-content">
+                  <h4 id="download_file_name_shared">Modal Header</h4>
+                  <p >Downlaod Link : <span id="download_link_p"></span></p>
                 </div>
               </div>
             <h4 class="white-text">Utils</h4>

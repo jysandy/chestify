@@ -245,7 +245,11 @@
               var files = document.getElementById('files');
               files.onclick = function(event) {
                   var target = getEventTarget(event);
-                  alert(target.innerHTML);
+                  var name = (target.innerHTML);
+                  if(name.slice(-4) == '.dir'){
+                    //this is a directory
+
+                  }
               };
               var folders = document.getElementById('folders');
               folders.onclick = function(event){
@@ -273,6 +277,12 @@
                 $file_size = this.files[0].size;
               });
               $('#upload_file').click(function(){
+                var file_path = "" ;
+                if ($cur_path == '/'){
+                  file_path = "" + $('#file_upload').val();
+                }else{
+                  file_path = $cur_path.slice(1) + $('#file_upload').val();
+                }
                 if($('#file_upload').val()){
                 alert($('#file_upload').val());
                 $.post(
@@ -283,36 +293,40 @@
                   } ,
                   function(data,status){
                       function progressHandlingFunction(e){
-                        if(e.lenghtComputable){
+                        if(e.lengthComputable){
                           $('progress').attr({value:e.laoded , max:e.total});
                         }
                       }
                       if(data['message'] == 'success'){
-                        alert('Uploading to ' + data['url']);
-                        var form_data = new FormData();
-                        if($('#file_upload').file){
-                          alert('we have ');
-                        }
-                        var file = '';
-                        form_data.append('file',$('#file_upload').file);
-                        $.ajax({
-                          url:data['url'],
-                          data :form_data,
-                          mimeType: "multipart/form-data",
-                          type:"PUT",
-                          cache :false,
-                          xhr:function(){
-                            var myxhr =  $.ajaxSettings.xhr();
-                            if(myxhr.upload){
-                              myXhr.upload.addEventListener('progress',progressHandlingFunction, false);
+                        var file_input_element = document.getElementById('file_upload');
+                        var file = file_input_element.files[0];
+                        $file_value = "";
+                        if(file){
+                          alert(data['url']);
+                          var xhr = new XMLHttpRequest();
+                          xhr.open('PUT',data['url'],true);
+                          xhr.upload.addEventListener('progress',function(e){
+                            if(e.lengthComputable){
+                              $('progress').attr({value:e.laoded , max:e.total});
                             }
-                            return myxhr;
-                          },
-                          success: function(data){
-                              alert(data);
+                          });
+                          var reader = new FileReader();
+                          reader.onload = function(evt){
+
+                            //alert('done dana done done Sending ');
+                            var file_type = file.type;
+                            var str = evt.target.result;
+                            var blob = new Blob([str] ,{'type':""});
+                            //xhr.setRequestHeader('X-HTTP-Method-Override','PUT');
+                            xhr.setRequestHeader('Content-Type',"");
+                            xhr.send(blob);
                           }
-                         });
-                        $('#upload_form').attr({'action':data['url']}).submit();
+                          xhr.onload = function(){alert('done');};
+                          reader.readAsBinaryString(file);
+                        }else{
+                          alert('Please select valid file ');
+                        }
+
                       }else{
                         alert('Couldnt upload values ' + data['message']);
                       }
@@ -328,6 +342,7 @@
                 });
                 $.get(location.origin + '/list' , function(data,status){
                   $json_data = data;
+                  console.log(JSON.stringify($json_data));
                   $display_func($cur_path);
                 });
               });

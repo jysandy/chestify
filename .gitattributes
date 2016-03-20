@@ -1,0 +1,5 @@
+chestify/static/bower_components/* linguist-vendored
+chestify/static/materialize.js linguist-vendored
+chestify/static/js/materialize* linguist-vendored
+chestify/static/css/materialize* linguist-vendored
+chestify/static/font/* linguist-vendored
